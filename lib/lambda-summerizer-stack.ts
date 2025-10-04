@@ -17,19 +17,30 @@ export class LambdaSummerizerStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+
     const summarizer = new lambdaNodejs.NodejsFunction(this, 'MessageSummarizer', {
       entry: path.join(__dirname, '../lambda/index.ts'), // TypeScriptファイルのパス
       handler: 'handler',
       runtime: lambda.Runtime.NODEJS_20_X,
+      functionName: 'bedrockSummerizer',
+      timeout: cdk.Duration.seconds(30),
       environment: {
         BEDROCK_REGION: 'us-east-1',
-        MODEL_ID: 'anthropic.claude-3-sonnet-20240229-v1:0',
+        MODEL_ID: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
       },
     });
 
     summarizer.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['bedrock:InvokeModel'],
-      resources: ['*'], // 必要に応じてモデルARNで絞り込み可能
+      actions: ['bedrock:InvokeModel'
+
+
+      ],
+      // resources: ['arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0'], // 必要に応じてモデルARNで絞り込み可能
+      //resources: [
+      //  "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0"
+
+      //], // 必要に応じてモデルARNで絞り込み可能
+      resources: [ "*"]
     }));
   }
 }

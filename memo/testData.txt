@@ -1,0 +1,11 @@
+
+{
+  "message": "Security Hubからの通知です。EC2インスタンス i-0abcd1234efgh5678 が暗号化されていないEBSボリュームを使用しています。推奨される対策は、EBSボリュームの暗号化を有効にすることです。影響度は「中」です。"
+}
+
+{
+  "message": "Security Hubからの通知です。1件目：EC2インスタンス i-0abcd1234efgh5678 が暗号化されていないEBSボリュームを使用しています。2件目：IAMユーザー admin に対して不要なポリシーが付与されています。影響度はどちらも「中」です。"
+}
+
+
+sam local invoke bedrockSummerizer --event event.json
