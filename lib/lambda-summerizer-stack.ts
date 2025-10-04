@@ -26,14 +26,12 @@ export class LambdaSummerizerStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(30),
       environment: {
         BEDROCK_REGION: 'us-east-1',
-        MODEL_ID: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
       },
     });
 
     summarizer.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['bedrock:InvokeModel'
-
-
+      actions: ['bedrock:InvokeModel',
+        'translate:TranslateText'
       ],
       // resources: ['arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0'], // 必要に応じてモデルARNで絞り込み可能
       //resources: [
