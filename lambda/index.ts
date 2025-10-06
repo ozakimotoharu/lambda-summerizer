@@ -13,6 +13,8 @@ interface LambdaEvent {
 const decoder = new TextDecoder();
 
 export const handler = async (event: LambdaEvent) => {
+
+  console.log("event:",JSON.stringify(event,null,'  '));
   const originalText = event.message;
 
   // AWS Translate
@@ -27,7 +29,29 @@ export const handler = async (event: LambdaEvent) => {
   const bedrock = new BedrockRuntimeClient({ region: process.env.BEDROCK_REGION });
 
   const bedrock30Result = await bedrock.send(new InvokeModelCommand({
-    modelId: 'anthropic.claude-3-sonnet-20240229-v1:0',
+    modelId: 'anthropic.claude-3-sonnet-20240229-v1:0', // <--- claude3Sonnect
+    contentType: "application/json",
+    accept: "application/json",
+    body: JSON.stringify({
+      anthropic_version: "bedrock-2023-05-31",
+      messages: [
+        {
+          role: "user",
+          content: `以下の要約と詳細を記述してください。メールでお知らせしやすいフォーマットでお願いします\n\n"${originalText}"`
+        }
+      ],
+      max_tokens: 1000,
+      temperature: 0.3
+    })
+  }));
+
+  //const decoded = decoder.decode(bedrock3Result.body);
+  //const claudeResponse = JSON.parse(decoder.decode(bedrock3Result.body));
+  const claude30Text = JSON.parse(decoder.decode(bedrock30Result.body)).content[0].text;
+
+const bedrock35Result = await bedrock.send(new InvokeModelCommand({
+    modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',  // <--- claude3.5Sonnect
+    
     contentType: "application/json",
     accept: "application/json",
     body: JSON.stringify({
@@ -45,16 +69,18 @@ export const handler = async (event: LambdaEvent) => {
 
   //const decoded = decoder.decode(bedrock3Result.body);
   //const claudeResponse = JSON.parse(decoder.decode(bedrock3Result.body));
-  const claude30Text = JSON.parse(decoder.decode(bedrock30Result.body)).content[0].text;
+  const claude35Text = JSON.parse(decoder.decode(bedrock35Result.body)).content[0].text;
+
 
   console.log("🔍 原文:", originalText);
   console.log("🟦 AWS Translate:", translateResult.TranslatedText);
   console.log("🟨 Claude 3.0 Sonnet:", claude30Text);
-
+  console.log("🟩 Claude 3.5 Sonnet:", claude35Text);
   return {
     original: originalText,
     translate: translateResult.TranslatedText,
-    claude: claude30Text
+    claude30: claude30Text,
+  claude35: claude35Text,
   };
 };
 
