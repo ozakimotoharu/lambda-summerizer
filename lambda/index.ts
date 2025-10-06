@@ -23,11 +23,11 @@ export const handler = async (event: LambdaEvent) => {
     Text: originalText
   }));
 
-  // Claude via Bedrock (Messages API)
+  // Claude 3.0 Sonnet via Bedrock
   const bedrock = new BedrockRuntimeClient({ region: process.env.BEDROCK_REGION });
 
-  const bedrockResult = await bedrock.send(new InvokeModelCommand({
-    modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+  const bedrock30Result = await bedrock.send(new InvokeModelCommand({
+    modelId: 'anthropic.claude-3-sonnet-20240229-v1:0',
     contentType: "application/json",
     accept: "application/json",
     body: JSON.stringify({
@@ -42,22 +42,19 @@ export const handler = async (event: LambdaEvent) => {
       temperature: 0.3
     })
   }));
-  const decoded = decoder.decode(bedrockResult.body);
-  const claudeResponse = JSON.parse(decoded);
-  const claudeText = claudeResponse.content[0].text;
-  //const claudeText=JSON.stringify(bedrockResult,null,' ')
-  //const claudeText = JSON.parse(unescapeText(bedrockResult.content[0].text));
-//const claudeText = JSON.parse(bedrockResult.body.toString()).completion;
 
+  //const decoded = decoder.decode(bedrock3Result.body);
+  //const claudeResponse = JSON.parse(decoder.decode(bedrock3Result.body));
+  const claude30Text = JSON.parse(decoder.decode(bedrock30Result.body)).content[0].text;
 
   console.log("🔍 原文:", originalText);
   console.log("🟦 AWS Translate:", translateResult.TranslatedText);
-  console.log("🟨 Claude (Bedrock):", claudeText);
+  console.log("🟨 Claude 3.0 Sonnet:", claude30Text);
 
   return {
     original: originalText,
     translate: translateResult.TranslatedText,
-    claude: claudeText
+    claude: claude30Text
   };
 };
 

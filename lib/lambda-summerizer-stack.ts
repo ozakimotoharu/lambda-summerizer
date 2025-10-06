@@ -28,17 +28,16 @@ export class LambdaSummerizerStack extends cdk.Stack {
         BEDROCK_REGION: 'us-east-1',
       },
     });
-
     summarizer.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['bedrock:InvokeModel',
-        'translate:TranslateText'
-      ],
-      // resources: ['arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0'], // 必要に応じてモデルARNで絞り込み可能
-      //resources: [
-      //  "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0"
-
-      //], // 必要に応じてモデルARNで絞り込み可能
+      actions: ['translate:TranslateText' ],
       resources: [ "*"]
+    }));
+    summarizer.addToRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'bedrock:InvokeModel'        ,
+        "bedrock:InvokeModelWithResponseStream"
+      ],
+      resources: [ "arn:aws:bedrock:us-east-1::foundation-model/anthropic.*"]
     }));
   }
 }
